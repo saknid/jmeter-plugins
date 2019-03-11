@@ -69,10 +69,13 @@ public class RedisDataSet extends ConfigTestElement
 
     public enum RedisDataType {
         REDIS_DATA_TYPE_LIST((byte)0),
-        REDIS_DATA_TYPE_SET((byte)1);
+        REDIS_DATA_TYPE_SET((byte)1),
 
+    	REDIS_DATA_TYPE_STRING((String)"");
         private byte value;
+        private String str;
         RedisDataType(byte value) { this.value = value; }
+        RedisDataType(String value) { this.str = value; }
         public int getValue() { return value; }
     }
 
@@ -130,7 +133,13 @@ public class RedisDataSet extends ConfigTestElement
             } else if (redisDataType.equals(RedisDataType.REDIS_DATA_TYPE_SET)) {
                 log.debug("Executing spop against redis set");
                 line = conn.spop(key);
-            } else {
+            }
+            else if (redisDataType.equals(RedisDataType.REDIS_DATA_TYPE_STRING)) {
+                log.debug("Executing lpop against redis string");
+                line = conn.get(key);
+         
+            }
+            else {
                 log.warn("Unexpected redis datatype: {0}".format(key));
             }
         } catch (JedisDataException jde) {
